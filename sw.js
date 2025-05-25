@@ -1,10 +1,10 @@
-const CACHE_NAME = 'aniversario-amor-v1';
+zconst CACHE_NAME = 'aniversario-amor-v1';
 const ASSETS = [
-  '/seu-repositorio/',  // Substitua pelo nome do seu repositório
-  '/seu-repositorio/index.html',
-  '/seu-repositorio/amor_puro.mp3',
-  '/seu-repositorio/amor.jpg',
-  '/seu-repositorio/icons/icon-192x192.png'
+  '/feliz/',  // Substitua pelo nome do seu repositório
+  '/feliz/index.html',
+  '/feliz/amor_puro.mp3',
+  '/feliz/amor.jpg',
+  '/feliz/icone.png'
 ];
 
 self.addEventListener('install', event => {
