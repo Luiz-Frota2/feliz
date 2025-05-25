@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aniversario de Namoro❤️</title>
+    <!-- Meta tags PWA -->
+    <meta name="theme-color" content="#6b21a8">
+    <meta name="description" content="Um presente romântico digital para celebrar nosso amor">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="icons/icon-192x192.png">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(-5deg); }
+            50% { transform: translateY(-20px) rotate(5deg); }
+        }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        @keyframes heartbeat {
+            0% { transform: scale(1); }
+            25% { transform: scale(1.1); }
+            50% { transform: scale(1); }
+            75% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        @keyframes glow {
+            0%, 100% { box-shadow: 0 0 10px rgba(138, 43, 226, 0.5); }
+            50% { box-shadow: 0 0 20px rgba(100, 149, 237, 0.7); }
+        }
+
+        .float { animation: float 4s ease-in-out infinite; }
+        .pulse { animation: pulse 3s ease infinite; }
+        .heartbeat { animation: heartbeat 1.8s ease infinite; }
+        .glow { animation: glow 2.5s ease infinite alternate; }
+
+        .text-shadow-purple {
+            text-shadow: 0 0 10px rgba(147, 51, 234, 0.8);
+        }
+
+        .bg-purple-gradient {
+            background: linear-gradient(135deg, #4b0082 0%, #6b21a8 40%, #1e3a8a 80%, #000000 100%);
+        }
+
+        .bg-heart-pattern {
+            background-image: radial-gradient(circle, rgba(147, 51, 234, 0.2) 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .fade-in {
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+
+        .custom-player {
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .progress-bar {
+            height: 6px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 3px;
+        }
+
+        .progress {
+            height: 100%;
+            background: linear-gradient(to right, #6366f1, #4f46e5);
+            border-radius: 3px;
+            width: 0%;
+        }
+
+        /* Botão de instalação */
+        #installButton {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, #6b21a8, #4f46e5);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(107, 33, 168, 0.4);
+            z-index: 100;
+            display: none;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+
+        #installButton:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(107, 33, 168, 0.6);
+        }
+
+        #installButton i {
+            margin-right: 8px;
+        }
+    </style>
+</head>
+<body class="bg-black min-h-screen overflow-x-hidden bg-heart-pattern flex flex-col items-center justify-center p-4">
+
+    <!-- Botão de instalação do PWA -->
+    <button id="installButton" class="hidden">
+        <i class="fas fa-download"></i> Instalar App
+    </button>
+    
+    <div class="max-w-md w-full mx-auto">
+        <!-- Botão para tocar música -->
+        <div class="text-center mb-6" id="musicButtonContainer">
+            <button onclick="playFullSong()" class="px-6 py-3 bg-gradient-to-r from-purple-700 to-blue-600 text-white rounded-xl shadow-lg hover:from-purple-600 hover:to-blue-500 transition-all transform hover:scale-105 flex items-center justify-center mx-auto glow">
+                <i class="fas fa-music mr-2"></i> Tocar Nossa Música
+            </button>
+        </div>
+        
+        <!-- Player de Áudio Personalizado -->
+        <div id="audioPlayer" class="hidden fade-in custom-player rounded-xl p-4 mt-4">
+            <div class="flex items-center justify-between mb-3">
+                <div class="text-white">
+                    <div class="font-medium" id="songTitle">Um Amor Puro</div>
+                    <div class="text-xs text-purple-200" id="songArtist">Djavan</div>
+                </div>
+                <button id="playPauseBtn" class="text-white bg-gradient-to-r from-purple-600 to-blue-500 hover:from-purple-500 hover:to-blue-400 rounded-full w-10 h-10 flex items-center justify-center">
+                    <i class="fas fa-play"></i>
+                </button>
+            </div>
+            
+            <div class="progress-bar mb-2">
+                <div class="progress" id="progressBar"></div>
+            </div>
+            
+            <div class="flex justify-between text-xs text-purple-200">
+                <span id="currentTime">0:00</span>
+                <span id="duration">0:00</span>
+            </div>
+            
+            <audio id="audioElement" preload="metadata">
+                <source src="amor_puro.mp3" type="audio/mpeg">
+                Seu navegador não suporta o elemento de áudio.
+            </audio>
+        </div>
+        
+        <!-- Main Card -->
+        <div class="bg-purple-900 bg-opacity-70 backdrop-blur-sm rounded-2xl shadow-2xl overflow-hidden border border-purple-500 border-opacity-30 transform transition-all duration-500 hover:scale-[1.02]">
+            <!-- Header with floating hearts -->
+            <div class="relative h-32 bg-purple-gradient flex items-center justify-center overflow-hidden">
+                <i class="fas fa-heart text-purple-300 text-4xl absolute top-8 left-1/4 float opacity-70"></i>
+                <i class="fas fa-heart text-purple-200 text-5xl absolute top-10 right-1/4 float opacity-80" style="animation-delay: 0.5s;"></i>
+                <i class="fas fa-heart text-purple-100 text-3xl absolute bottom-8 left-1/3 float opacity-90" style="animation-delay: 1s;"></i>
+                <i class="fas fa-heart text-white text-6xl absolute bottom-10 right-1/3 float opacity-100 heartbeat"></i>
+                
+                <h1 class="text-white text-3xl font-bold z-10 text-shadow-purple">Feliz Dia 30❤️</h1>
+            </div>
+            
+            <!-- Content -->
+            <div class="p-6 text-center">
+                <div class="mb-6">
+                    <p class="text-purple-100 text-lg mb-4 transition-all duration-300 hover:text-xl">
+                        Cada momento contigo é especial...
+                    </p>
+                    <p class="text-purple-200 text-sm mb-4 italic">
+                        "O amor não se vê com os olhos, mas com o coração."<br>
+                        - William Shakespeare
+                    </p>
+                </div>
+                
+                <!-- Interactive Heart -->
+                <div class="mb-6 flex justify-center">
+                    <div id="interactiveHeart" class="text-purple-300 text-6xl cursor-pointer transition-transform duration-200 hover:scale-110">
+                        ❤️
+                    </div>
+                </div>
+                
+                <!-- Photo Frame -->
+                <div class="mb-6 relative">
+                    <div class="w-32 h-32 mx-auto rounded-full border-4 border-purple-300 overflow-hidden shadow-lg pulse">
+                        <div class="w-full h-full bg-purple-700 flex items-center justify-center text-white">
+                            <i class="fas fa-user text-4xl"><img src="amor.jpg" alt="Juntos até o fim"></i>
+                        </div>
+                    </div>
+                    <div class="absolute -bottom-2 -right-2 bg-purple-500 text-white rounded-full w-8 h-8 flex items-center justify-center">
+                        <i class="fas fa-heart text-sm"></i>
+                    </div>
+                </div>
+                
+                <!-- Message -->
+                <div class="bg-purple-700 bg-opacity-50 rounded-xl p-4 mb-6">
+                    <p class="text-purple-100 text-sm">
+                        Mesmo quando estamos longe, meu coração bate por você. Cada riso, cada olhar, cada momento compartilhado fica guardado no meu coração. Você é a pessoa que ilumina meus dias e aquece minhas noites.
+                    </p>
+                </div>
+                
+                <!-- Date Counter -->
+                <div class="flex justify-between text-purple-200 text-xs mb-6">
+                    <div class="bg-purple-800 bg-opacity-70 px-3 py-2 rounded-lg">
+                        <div>Dias</div>
+                        <div id="daysCounter" class="font-bold text-lg">0</div>
+                    </div>
+                    <div class="bg-purple-800 bg-opacity-70 px-3 py-2 rounded-lg">
+                        <div>Horas</div>
+                        <div id="hoursCounter" class="font-bold text-lg">0</div>
+                    </div>
+                    <div class="bg-purple-800 bg-opacity-70 px-3 py-2 rounded-lg">
+                        <div>Minutos</div>
+                        <div id="minutesCounter" class="font-bold text-lg">0</div>
+                    </div>
+                    <div class="bg-purple-800 bg-opacity-70 px-3 py-2 rounded-lg">
+                        <div>Segundos</div>
+                        <div id="secondsCounter" class="font-bold text-lg">0</div>
+                    </div>
+                </div>
+                
+                <!-- Footer -->
+                <div class="text-purple-300 text-xs italic">
+                    Feito com ❤️ para a pessoa mais especial
+                </div>
+            </div>
+        </div>
+        
+        <!-- Floating elements around the card -->
+        <div class="fixed top-10 left-10 text-purple-300 text-xl opacity-50 float" style="animation-delay: 0.3s;">❤️</div>
+        <div class="fixed bottom-20 right-10 text-purple-200 text-2xl opacity-70 float" style="animation-delay: 0.7s;">❤️</div>
+        <div class="fixed top-1/3 right-1/4 text-purple-100 text-xl opacity-90 float" style="animation-delay: 1.2s;">❤️</div>
+        <div class="fixed top-1/3 right-1/4 text-purple-100 text-xl opacity-90 float" style="animation-delay: 1.2s;">❤️</div>
+        <div class="fixed top-1/3 right-1/4 text-purple-100 text-xl opacity-90 float" style="animation-delay: 1.2s;">❤️</div>
+    </div>
+
+    <script>
+        // Interactive heart effect
+        const interactiveHeart = document.getElementById('interactiveHeart');
+        interactiveHeart.addEventListener('click', function() {
+            this.classList.add('animate-ping');
+            setTimeout(() => {
+                this.classList.remove('animate-ping');
+            }, 1000);
+            
+            // Create floating hearts
+            for (let i = 0; i < 5; i++) {
+                createFloatingHeart();
+            }
+        });
+        
+        function createFloatingHeart() {
+            const heart = document.createElement('div');
+            heart.innerHTML = '❤️';
+            heart.className = 'text-purple-300 text-2xl absolute';
+            
+            // Random position near the interactive heart
+            const interactiveRect = interactiveHeart.getBoundingClientRect();
+            const x = interactiveRect.left + Math.random() * interactiveRect.width;
+            const y = interactiveRect.top + Math.random() * interactiveRect.height;
+            
+            heart.style.left = `${x}px`;
+            heart.style.top = `${y}px`;
+            heart.style.transform = 'translateY(0)';
+            heart.style.opacity = '1';
+            heart.style.transition = 'all 2s ease-out';
+            
+            document.body.appendChild(heart);
+            
+            // Animate
+            setTimeout(() => {
+                heart.style.transform = `translateY(-${100 + Math.random() * 100}px) translateX(${(Math.random() - 0.5) * 100}px)`;
+                heart.style.opacity = '0';
+            }, 10);
+            
+            // Remove after animation
+            setTimeout(() => {
+                heart.remove();
+            }, 2000);
+        }
+        
+        // Date counter
+        function updateCounter() {
+            const specialDate = new Date('2024-12-30T19:00:00');
+            const now = new Date();
+            const diff = now - specialDate;
+            
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+            
+            document.getElementById('daysCounter').textContent = days;
+            document.getElementById('hoursCounter').textContent = hours;
+            document.getElementById('minutesCounter').textContent = minutes;
+            document.getElementById('secondsCounter').textContent = seconds;
+        }
+        
+        updateCounter();
+        setInterval(updateCounter, 1000);
+        
+        // Random floating hearts
+        setInterval(() => {
+            if (Math.random() > 0.7) {
+                createFloatingHeart();
+            }
+        }, 3000);
+        
+        // Music player functions
+        function playFullSong() {
+            document.getElementById('musicButtonContainer').classList.add('hidden');
+            const player = document.getElementById('audioPlayer');
+            player.classList.remove('hidden');
+            player.classList.add('fade-in');
+            
+            const audio = document.getElementById('audioElement');
+            const playPauseBtn = document.getElementById('playPauseBtn');
+            
+            audio.play().then(() => {
+                playPauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
+            }).catch(error => {
+                console.log("Autoplay foi bloqueado:", error);
+                playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
+            });
+        }
+        
+        // Player controls
+        document.addEventListener('DOMContentLoaded', function() {
+            const audio = document.getElementById('audioElement');
+            const playPauseBtn = document.getElementById('playPauseBtn');
+            const progressBar = document.getElementById('progressBar');
+            const currentTimeEl = document.getElementById('currentTime');
+            const durationEl = document.getElementById('duration');
+            
+            playPauseBtn.addEventListener('click', function() {
+                if (audio.paused) {
+                    audio.play();
+                    this.innerHTML = '<i class="fas fa-pause"></i>';
+                } else {
+                    audio.pause();
+                    this.innerHTML = '<i class="fas fa-play"></i>';
+                }
+            });
+            
+            audio.addEventListener('timeupdate', function() {
+                const currentTime = audio.currentTime;
+                const duration = audio.duration;
+                const progressPercent = (currentTime / duration) * 100;
+                progressBar.style.width = progressPercent + '%';
+                
+                currentTimeEl.textContent = formatTime(currentTime);
+                if (duration) {
+                    durationEl.textContent = formatTime(duration);
+                }
+            });
+            
+            document.querySelector('.progress-bar').addEventListener('click', function(e) {
+                const width = this.clientWidth;
+                const clickX = e.offsetX;
+                const duration = audio.duration;
+                audio.currentTime = (clickX / width) * duration;
+            });
+            
+            audio.addEventListener('ended', function() {
+                playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
+                progressBar.style.width = '0%';
+                currentTimeEl.textContent = '0:00';
+            });
+            
+            function formatTime(seconds) {
+                const minutes = Math.floor(seconds / 60);
+                const secs = Math.floor(seconds % 60);
+                return `${minutes}:${secs < 10 ? '0' : ''}${secs}`;
+            }
+        });
+        
+        // PWA Installation
+        let deferredPrompt;
+        const installButton = document.getElementById('installButton');
+        
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            installButton.style.display = 'flex';
+            
+            installButton.addEventListener('click', async () => {
+                installButton.style.display = 'none';
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                console.log(`User response to the install prompt: ${outcome}`);
+                deferredPrompt = null;
+            });
+        });
+        
+        window.addEventListener('appinstalled', () => {
+            console.log('PWA was installed');
+            installButton.style.display = 'none';
+            deferredPrompt = null;
+        });
+        
+        // Register Service Worker
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js')
+                    .then(registration => {
+                        console.log('ServiceWorker registration successful:', registration.scope);
+                    })
+                    .catch(err => {
+                        console.log('ServiceWorker registration failed:', err);
+                    });
+            });
+        }
+    </script>
+</body>
+</html>
