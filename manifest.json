@@ -2,14 +2,14 @@
   "name": "Aniversário de Namoro",
   "short_name": "Amor",
   "description": "Um presente romântico digital",
-  "start_url": "/seu-repositorio/",  // Substitua pelo nome do seu repositório
-  "scope": "/seu-repositorio/",      // Substitua pelo nome do seu repositório
+  "start_url": "/feliz/",  // Substitua pelo nome do seu repositório
+  "scope": "/feliz/",      // Substitua pelo nome do seu repositório
   "display": "standalone",
   "background_color": "#6b21a8",
   "theme_color": "#6b21a8",
   "icons": [
     {
-      "src": "icons/icon-72x72.png",
+      "src": "icone.png",
       "sizes": "72x72",
       "type": "image/png"
     },
